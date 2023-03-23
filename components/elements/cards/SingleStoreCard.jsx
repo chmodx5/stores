@@ -7,9 +7,9 @@ import Link from "next/link";
 
 const SingleStoreCard = ({ store }) => {
   return (
-    <Card>
-      <div className="flex space-x-4">
-        <div className="w-36">
+    <Card classes={"p-6"} href={`/${store.slug}`}>
+      <div className="flex space-x-6">
+        <div className="w-24">
           <ImageContainer
             src={`${
               store.logo

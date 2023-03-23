@@ -9,7 +9,7 @@ const Card = ({ classes, flat, children, href, ...props }) => {
   return (
     <AppComp
       href={href}
-      className={`rounded-xl p-2  ${
+      className={`rounded-xl hover:shadow-md transition-all ease-in-out  p-2  ${
         flat ? "shadow-none" : "shadow "
       } ${classes}`}
       {...props}
