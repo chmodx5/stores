@@ -19,7 +19,7 @@ export default function Home({ stores }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="px-6">
+      <main className="container mx-auto px-6 space-y-10">
         <GuestHero />
         <GuestFeatures />
         <GuestFeaturedStores stores={stores} />

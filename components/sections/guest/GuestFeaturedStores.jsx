@@ -5,7 +5,7 @@ const GuestFeaturedStores = ({ stores }) => {
   return (
     <section className="py-10">
       <div className="">
-        <h1 className="text-3xl font-bold mb-4">
+        <h1 className="text-3xl font-bold mb-4 text-center md:text-left">
           <span className="text-primary">Featured</span> stores
         </h1>
         <ul className="grid grid-cols-1 md:grid-cols-2">

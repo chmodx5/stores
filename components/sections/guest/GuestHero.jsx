@@ -5,8 +5,8 @@ import Link from "next/link";
 const GuestHero = () => {
   return (
     <section className=" body-font font-bold">
-      <div className="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
-        <div className="lg:flex-grow order-2 bg-yellow-30 md:order-1 md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
+      <div className="container mx-auto flex  py-24 md:flex-row flex-col items-center ">
+        <div className="lg:flex-grow order-2   md:order-1 md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
           <Logo />
           <div className="font-extrabold text-4xl mb-8 mt-4">
             <h1 className="text-primary text-6xl mb-6 ">Maduka</h1>
@@ -36,7 +36,7 @@ const GuestHero = () => {
             </button>
           </Link>
         </div>
-        <div className="hidden md:w-1/2 bg-red-30 w-5/6 order-1 md:order-2 md:flex items-center justify-center">
+        <div className="hidden md:w-1/2  w-5/6 order-1 md:order-2 md:flex items-center justify-center">
           <div className="w-3/4">
             <ImageContainer alt="shopping icon" src={"./hero.svg"} />
           </div>

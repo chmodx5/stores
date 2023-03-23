@@ -19,12 +19,12 @@ const SingleStoreCard = ({ store }) => {
           />
         </div>
         <div>
-          <Link href={`/${store.slug}`} className="group">
+          <div className="group">
             <h3 className="font-semibold text-lg capitalize group-hover:underline">
               {store.name}
             </h3>
             <small>{moment(store.createdAt).fromNow()}</small>
-          </Link>
+          </div>
           <p className="text-gray-500 text-sm mt-2">{store.description}</p>
           <div className="flex space-x-2 items-center mt-2">
             <FaMapMarkedAlt />
