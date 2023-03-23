@@ -6,6 +6,164 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model Account {
+  id                String  @id @default(cuid()) @map("_id")
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid()) @map("_id")
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                      String             @id @default(cuid()) @map("_id")
+  name                    String?
+  email                   String?            @unique
+  emailVerified           DateTime?
+  image                   String?
+  accounts                Account[]
+  sessions                Session[]
+  store                   Store?
+  Product                 Product[]
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  brandEdited             Brand[]            @relation("brandEdited")
+  brandCreated            Brand[]            @relation("brandCreated")
+  categoryEdited          Category[]         @relation("categoryEdited")
+  categoryCreated         Category[]         @relation("categoryCreated")
+  featuredCategoryEdited  FeaturedCategory[] @relation("featuredCategoryEdited")
+  featuredCategoryCreated FeaturedCategory[] @relation("featuredCategoryCreated")
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid()) @map("_id")
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Store {
+  id                  String             @id @default(cuid()) @map("_id")
+  name                String
+  slug                String             @unique
+  description         String
+  location            String?
+  logo                String?
+  storeEmail          String?            @unique
+  storePhoneNumber    String?
+  whatsappPhone       String?
+  address             String?
+  products            Product[]
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String             @unique
+  isActive            Boolean            @default(false)
+  isVerified          Boolean            @default(false)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  categoryIds         String[]           @db.ObjectId
+  categories          Category[]         @relation("StoreToCategory", fields: [categoryIds], references: [id])
+  featuredCategoryIds String[]           @db.ObjectId
+  featuredCategories  FeaturedCategory[] @relation("StoreToFeaturedCategory", fields: [featuredCategoryIds], references: [id])
+}
+
+model Brand {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  image       String?
+  slug        String    @unique
+  products    Product[]
+  createdBy   User?     @relation("brandCreated", fields: [createdById], references: [id])
+  createdById String?
+  editedBy    User?     @relation("brandEdited", fields: [editedById], references: [id])
+  editedById  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Category {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  name          String     @unique
+  slug          String     @unique
+  description   String?
+  image         String?
+  parent        Category?  @relation("CategoryToSubcategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId      String?    @db.ObjectId
+  subcategories Category[] @relation("CategoryToSubcategory")
+  products      Product[]
+  createdBy     User?      @relation("categoryCreated", fields: [createdById], references: [id])
+  createdById   String?
+  editedBy      User?      @relation("categoryEdited", fields: [editedById], references: [id])
+  editedById    String?
+  storeIds      String[]
+  stores        Store[]    @relation("StoreToCategory", fields: [storeIds], references: [id])
+  isFeatured    Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Product {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  name               String            @unique
+  slug               String            @unique
+  description        String?
+  thumbnail          String?
+  images             String?
+  price              Float
+  discountPrice      Float?            @default(0)
+  stock              Int
+  store              Store?            @relation(fields: [storeId], references: [id])
+  storeId            String?
+  brand              Brand?            @relation(fields: [brandId], references: [id])
+  brandId            String?           @db.ObjectId
+  category           Category?         @relation(fields: [categoryId], references: [id])
+  categoryId         String?           @db.ObjectId
+  user               User              @relation(fields: [userId], references: [id])
+  userId             String
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  FeaturedCategory   FeaturedCategory? @relation(fields: [featuredCategoryId], references: [id])
+  featuredCategoryId String?           @db.ObjectId
+}
+
+model FeaturedCategory {
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  name          String             @unique
+  slug          String             @unique
+  description   String?
+  parent        FeaturedCategory?  @relation("FeaturedSubcategory", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId      String?            @db.ObjectId
+  subcategories FeaturedCategory[] @relation("FeaturedSubcategory")
+  products      Product[]
+  storeIds      String[]
+  stores        Store[]            @relation("StoreToFeaturedCategory", fields: [storeIds], references: [id])
+  createdBy     User?              @relation("featuredCategoryCreated", fields: [createdById], references: [id])
+  createdById   String?
+  editedBy      User?              @relation("featuredCategoryEdited", fields: [editedById], references: [id])
+  editedById    String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }

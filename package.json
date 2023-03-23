@@ -1,20 +1,51 @@
 {
-  "name": "stores",
-  "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+  "description": "An example project for NextAuth.js with Next.js",
+  "repository": "https://github.com/nextauthjs/next-auth-example.git",
+  "bugs": {
+    "url": "https://github.com/nextauthjs/next-auth/issues"
   },
+  "homepage": "https://next-auth-example.vercel.app",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js",
+    "schema": "prisma/schema.prisma"
+  },
+  "author": "Iain Collins <me@iaincollins.com>",
+  "contributors": [
+    "Balázs Orbán <info@balazsorban.com>",
+    "Nico Domino <yo@ndo.dev>",
+    "Lluis Agusti <hi@llu.lu>"
+  ],
   "dependencies": {
-    "@next/font": "13.2.4",
-    "eslint": "8.36.0",
-    "eslint-config-next": "13.2.4",
-    "next": "13.2.4",
+    "@headlessui/react": "^1.7.13",
+    "@next-auth/prisma-adapter": "^1.0.5",
+    "@prisma/client": "^4.11.0",
+    "moment": "^2.29.4",
+    "next": "latest",
+    "next-auth": "^4.20.1",
+    "nodemailer": "^6",
     "prisma": "^4.11.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
+    "react-quill": "^2.0.0",
+    "react-redux": "^8.0.5",
+    "react-slick": "^0.29.0",
+    "slick-carousel": "^1.8.1",
+    "vercel": "^28.17.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "@types/node": "^17",
+    "@types/react": "^18.0.15",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.7",
+    "typescript": "^4"
   }
 }
