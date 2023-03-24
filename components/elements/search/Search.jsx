@@ -58,7 +58,7 @@ const Search = () => {
   }
 
   return (
-    <div>
+    <div className="md:w-96 mx-auto">
       <form onSubmit={handleSearchInput} className="relative">
         <div className="flex space-x-1">
           <input
