@@ -5,6 +5,7 @@ import Slider from "react-slick";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { Card, IconButton, ImageContainer, Product } from "../../elements";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const CaregoriesSlider = ({ title, small, products, link, categories }) => {
   console.log("categories slider", categories);
@@ -56,6 +57,7 @@ const CaregoriesSlider = ({ title, small, products, link, categories }) => {
     ],
   };
   const slider = React.useRef(null);
+  const storeSlug = useRouter().query.storeSlug;
 
   function next() {
     slider.current.slickNext();
@@ -128,28 +130,35 @@ const CaregoriesSlider = ({ title, small, products, link, categories }) => {
                   categories.map((category, idx) => (
                     <div key={category.id} className="">
                       {/* <Product small product={product} /> */}
-                      <Card classes={"py-2 mx-2 my-2"}>
-                        <ImageContainer
-                          src={
-                            category.logo
-                              ? category.logo.includes("http")
-                                ? category.logo
-                                : "/product-thumbnails/" + category.logo
-                              : `https://loremflickr.com/320/240?random=${idx}`
-                          }
-                          alt={category.name + " thumbnail"}
-                        />
-                        <div>
-                          <h1 className="text-xs font-semibold pt-4">
-                            {category.name}
-                          </h1>
+                      <Link
+                        href={`/${storeSlug}/products?category=${category.slug}`}
+                      >
+                        <Card
+                          classes={"py-2 mx-2 my-2"}
+                          // href={`/${storeSlug}/products?category=${storeSlug}`}
+                        >
+                          <ImageContainer
+                            src={
+                              category.logo
+                                ? category.logo.includes("http")
+                                  ? category.logo
+                                  : "/product-thumbnails/" + category.logo
+                                : `https://loremflickr.com/320/240?random=${idx}`
+                            }
+                            alt={category.name + " thumbnail"}
+                          />
                           <div>
-                            <small className="text-xs text-gray-500">
-                              Items - {category.products.length}
-                            </small>
+                            <h1 className="text-xs font-semibold pt-4">
+                              {category.name}
+                            </h1>
+                            <div>
+                              <small className="text-xs text-gray-500">
+                                Items - {category.products.length}
+                              </small>
+                            </div>
                           </div>
-                        </div>
-                      </Card>
+                        </Card>
+                      </Link>
                     </div>
                   ))}
               </Slider>
