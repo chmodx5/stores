@@ -15,11 +15,6 @@ const StoreProducts = ({ products, store }) => {
   useEffect(() => {
     setStore(store);
   }, []);
-  console.log(router);
-  console.log("products", products);
-
-  //   console.log(router);
-  //   console.log(products);
 
   if (!store) {
     return (
@@ -32,13 +27,15 @@ const StoreProducts = ({ products, store }) => {
   }
   return (
     <div>
-      <Card classes="p-6">
+      <Card classes="p-6 mt-4">
         <div className="flex space-x-4 items-center">
           {/* {!category && !brand && (
             <h1 className="text-2xl font-bold capitalize">All Products</h1>
           )} */}
           {router.category && (
-            <h1 className="text-2xl font-bold capitalize">{router.category}</h1>
+            <h1 className="text-2xl font-bold capitalize">
+              <span className="text-primary">category</span> - {router.category}
+            </h1>
           )}
           {router.category && router?.brand && (
             <FaChevronRight className="text-gray-500" />
@@ -55,7 +52,7 @@ const StoreProducts = ({ products, store }) => {
       </Card>
       <br />
       <br />
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {products != null ? (
           products.map((product) => (
             <Product product={product} key={product.id} />

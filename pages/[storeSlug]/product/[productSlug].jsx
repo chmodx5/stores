@@ -12,10 +12,12 @@ import {
 import GroupedProducts from "../../../components/sections/shared/GroupedProducts";
 import prisma from "../../../utils/prismadb";
 import StoreLayout from "../../../components/layouts/store/StoreLayout";
+import { useRouter } from "next/router";
 
 const StoreSingleProduct = ({ product }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
+  const router = useRouter();
+  console.log(router);
   const sliderRef = useRef(null);
 
   const settings = {
@@ -31,11 +33,9 @@ const StoreSingleProduct = ({ product }) => {
 
   return (
     <>
-      <div>single</div>
-
-      <div className="px-10">
-        <div className="grid grid-cols-12 space-x-6 pt-2 pb-20 ">
-          <div className="col-span-12 mb-10 md:col-span-7 lg:col-span-6">
+      <div className="px-2">
+        <div className="grid grid-cols-12  pt-2 gap-4 md:pb-2  ">
+          <div className="col-span-12 mb-10 md:col-span-7 lg:col-span-6 ">
             <div classes="p-0 w-9/12 mx-auto ">
               <Slider ref={sliderRef} {...settings}>
                 {product.images.split(",").map((image, index) => (
@@ -78,10 +78,10 @@ const StoreSingleProduct = ({ product }) => {
               ))}
             </div>
           </div>
-          <div className="col-span-12 md:col-span-5 lg:col-span-6">
-            <div className="mt-8">
+          <div className="col-span-12 md:col-span-5 lg:col-span-6 ">
+            <div className="mt-2 md:mt-0 w-full">
               <div className="mb-4">
-                <Chip variant={"success"}>In stock</Chip>
+                <Chip variant={"success"}>In stock - {product.stock}</Chip>
               </div>
               <h1 className="text-2xl mb-2 font-bold capitalize">
                 {product.name}
@@ -118,15 +118,25 @@ const StoreSingleProduct = ({ product }) => {
               </div>
 
               <a
-                href="https://wa.me/+254746405792?text=I'm%20interested%20in%20your%20car%20for%20sale%20https://momentjs.com/"
+                href={`https://wa.me/+254746405792?text=hi%20I'm%20interested%20in%20this%20product-${product.name.replaceAll(
+                  " ",
+                  "%20"
+                )}%20link%20-%20https://stores-tau.vercel.app${router.asPath}`}
+                target="_blank"
+              >
+                <Button>Order on whatsapp</Button>
+              </a>
+              {/* <a
+                href={`https://wa.me/+254746405792?text=I'm%20interested%20in`}
                 target="_blank"
               >
                 <Button>Order on whatsapp </Button>
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
-        <div className="mb-14 px-2">
+
+        <div className="mb-14">
           <h1 className="font-semibold text-xl mb-2 underline decoration-4">
             Product description
           </h1>

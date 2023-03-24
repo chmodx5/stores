@@ -58,7 +58,7 @@ const Product = ({ small, product }) => {
               </span>
             )}
           </p>
-          <small>{product.storeId}</small>
+          {/* <small>{product.storeId}</small> */}
         </div>
       </Link>
     </Card>

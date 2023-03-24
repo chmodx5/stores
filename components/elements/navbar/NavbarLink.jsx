@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 const NavbarLink = ({ href, text, props }) => {
   const currentLink = useRouter().asPath;
-  console.log(currentLink, href);
+
   return (
     <Link
       href={href}

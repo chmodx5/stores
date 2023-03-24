@@ -2,32 +2,39 @@ import React from "react";
 import prisma from "./../../utils/prismadb";
 import { Hero } from "./../../components/sections/shop";
 import { useRouter } from "next/router";
-import { GroupedProducts } from "./../../components/sections/shared";
+import {
+  GroupedProducts,
+  CaregoriesSlider,
+} from "./../../components/sections/shared";
 import StoreLayout from "../../components/layouts/store/StoreLayout";
+import { storeContext } from "../../store/storeContext";
 
 const StoreHome = ({ store, categories, productToBeFetched }) => {
-  console.log("productToBeFetched", productToBeFetched);
+  const { setStore } = React.useContext(storeContext);
+
+  React.useEffect(() => {
+    setStore(store);
+  }, []);
+
   const storeSlug = useRouter().query.storeSlug;
-  console.log(categories);
+
   return (
     <div>
       <Hero categories={categories} />
-      {/* {categories.map((category) => (
-        <GroupedProducts
-          key={category.id}
-          title={category.name}
-          link={"/" + storeSlug + "/products?category=" + category.slug}
-          products={category.products}
-        />
-      ))} */}
-      {categories.map((category) => (
-        <GroupedProducts
-          key={category.id}
-          title={category.name}
-          link={"/" + storeSlug + "/products?category=" + category.slug}
-          products={category.products}
-        />
-      ))}
+
+      <div className="mt-10">
+        <CaregoriesSlider categories={categories} />
+      </div>
+      <div className=" space-y-4">
+        {categories.map((category) => (
+          <GroupedProducts
+            key={category.id}
+            title={category.name}
+            link={"/" + storeSlug + "/products?category=" + category.slug}
+            products={category.products}
+          />
+        ))}
+      </div>
     </div>
   );
 };

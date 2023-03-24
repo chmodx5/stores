@@ -20,7 +20,7 @@ const IconButton = ({ children, color, ...props }) => {
 
   return (
     <button
-      className={`inline-flex text-white font-semibold  border-0  items-center justify-center h-8 w-8 focus:outline-none  rounded-xl  ${buttonColorClasses()}`}
+      className={`inline-flex text-white font-semibold  border-0  items-center justify-center h-10 w-10 focus:outline-none  rounded-xl  ${buttonColorClasses()}`}
       {...props}
     >
       {children}

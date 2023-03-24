@@ -6,9 +6,11 @@ const StoreLayout = ({ children }) => {
   const storeSlug = useRouter().query.storeSlug;
 
   return (
-    <div>
-      <Navbar />
-      <main className="container mx-auto">{children}</main>
+    <div className="">
+      <header>
+        <Navbar />
+      </header>
+      <main className="container mx-auto px-2">{children}</main>
     </div>
   );
 };

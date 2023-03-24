@@ -16,15 +16,6 @@ import Link from "next/link";
 const CreateStore = () => {
   const { data: session } = useSession();
 
-  // useEffect(() => {
-  //   if (!session) {
-  //     signIn();
-  //   }
-  // }, [session]);
-  // if (!session) {
-  //   signIn();
-  // }
-
   console.log(session);
 
   const [storeName, setStoreName] = useState("");
@@ -67,6 +58,7 @@ const CreateStore = () => {
 
   return (
     <div>
+      <button onClick={() => signOut()}>log out</button>
       <Card className="p-8 mt-4 w-96 mx-auto">
         <div className="flex mb-8 flex-col justify-center items-center">
           <Logo />
