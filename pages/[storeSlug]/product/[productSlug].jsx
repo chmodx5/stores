@@ -8,16 +8,22 @@ import {
   LoadingSpinner,
   Rating,
 } from "../../../components/elements";
-
 import GroupedProducts from "../../../components/sections/shared/GroupedProducts";
 import prisma from "../../../utils/prismadb";
 import StoreLayout from "../../../components/layouts/store/StoreLayout";
 import { useRouter } from "next/router";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { storeContext } from "../../../store/storeContext";
 
 const StoreSingleProduct = ({ product }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter();
-  console.log(router);
+  const { setStore } = React.useContext(storeContext);
+  React.useEffect(() => {
+    setStore(product.store);
+  }, []);
+
   const sliderRef = useRef(null);
 
   const settings = {
@@ -164,6 +170,7 @@ export async function getServerSideProps({ params }) {
     include: {
       brand: true,
       category: true,
+      store: true,
     },
   });
 

@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 
 export default function Home({ stores }) {
   const { data: session } = useSession();
-  console.log(session);
+
   return (
     <>
       <Head>
@@ -24,8 +24,6 @@ export default function Home({ stores }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container mx-auto px-6 space-y-10">
-        <button onClick={() => signIn()}> sign in</button>
-        <button onClick={() => signOut()}> sign out</button>
         <GuestHero />
         <GuestFeatures />
         <GuestFeaturedStores stores={stores} />
