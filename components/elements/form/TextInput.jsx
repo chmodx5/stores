@@ -1,14 +1,33 @@
+import { useField } from "formik";
 import React from "react";
 
-const TextAreaInput = ({ className, label, ...props }) => {
+const TextAreaInput = ({ textArea, label, ...props }) => {
+  const [field, meta] = useField(props);
+
+  const InputElement = textArea ? "textarea" : "input";
   return (
-    <div className={`${className}`}>
+    <div className={``}>
       <div className="mb-2 block font-semibold text-sm">
-        <label htmlFor="" value="Your email">
+        <label
+          className={`${meta.touched && meta.error ? "text-error" : ""}`}
+          htmlFor={props.id || props.name}
+          value="Your email"
+        >
           {label}
         </label>
       </div>
-      <input {...props} />
+      <InputElement
+        className={`${
+          meta.touched && meta.error
+            ? "border-error outline-error border-2"
+            : ""
+        }`}
+        {...field}
+        {...props}
+      />
+      {meta.touched && meta.error ? (
+        <div className="text-red-500 text-xs">{meta.error}</div>
+      ) : null}
     </div>
   );
 };

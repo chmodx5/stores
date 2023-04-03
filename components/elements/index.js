@@ -27,6 +27,9 @@ import { NavbarLink, MobileMenu, Navbar } from "./navbar";
 import StoreLogo from "./storeLogo/StoreLogo";
 import SingleStoreCard from "./cards/SingleStoreCard";
 import Search from "./search/Search";
+import EditModal from "./editModal/EditModal";
+import AnalyticsTotalsCard from "./cards/AnalyticsTotalsCard";
+import MultipleFileInput from "./form/MultipleFileInput";
 
 export {
   Logo,
@@ -60,4 +63,7 @@ export {
   StoreLogo,
   Search,
   SingleStoreCard,
+  EditModal,
+  AnalyticsTotalsCard,
+  MultipleFileInput,
 };

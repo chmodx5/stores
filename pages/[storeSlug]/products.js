@@ -82,6 +82,49 @@ export async function getServerSideProps(context) {
     },
   });
 
+  if (!q && !category && !brand) {
+    totalProducts = await prisma.product.count({
+      where: {
+        store: {
+          slug: storeSlug,
+        },
+        categoryId: {
+          not: null,
+        },
+        brandId: {
+          not: null,
+        },
+      },
+    });
+
+    totalPages = Math.ceil(totalProducts / perPage);
+
+    products = await prisma.product.findMany({
+      where: {
+        store: {
+          slug: storeSlug,
+        },
+        categoryId: {
+          not: null,
+        },
+        brandId: {
+          not: null,
+        },
+      },
+      include: {
+        brand: true,
+        category: true,
+        user: true,
+        store: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: skip || 0,
+      take: 15,
+    });
+  }
+
   if (q && !category && !brand) {
     const searchQ = q.replaceAll("-", " ");
     products = await prisma.product.findMany({
@@ -105,8 +148,12 @@ export async function getServerSideProps(context) {
   }
 
   if (category && !brand && !q) {
+    console.log("category");
     products = await prisma.product.findMany({
       where: {
+        // store: {
+        //   slug: storeSlug,
+        // },
         store: {
           slug: storeSlug,
         },
@@ -149,6 +196,9 @@ export async function getServerSideProps(context) {
       products = null;
     }
   }
+
+  console.log("products");
+  console.log(products);
 
   return {
     props: {

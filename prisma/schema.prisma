@@ -10,20 +10,27 @@ datasource db {
   url      = env("MONGODB_URI")
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 model Account {
-  id                String  @id @default(cuid()) @map("_id")
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.String
-  access_token      String? @db.String
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.String
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String           @id @default(cuid()) @map("_id")
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?          @db.String
+  access_token             String?          @db.String
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?          @db.String
+  session_state            String?
+  user                     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountSettings          AccountSettings?
+  store                    Store?
+  userActiveAccountSetting UserSettings?
 
   @@unique([provider, providerAccountId])
 }
@@ -42,9 +49,9 @@ model User {
   email                   String?            @unique
   emailVerified           DateTime?
   image                   String?
+  role                    String?            @default("USER")
   accounts                Account[]
   sessions                Session[]
-  store                   Store?
   Product                 Product[]
   createdAt               DateTime           @default(now())
   updatedAt               DateTime           @updatedAt
@@ -54,6 +61,7 @@ model User {
   categoryCreated         Category[]         @relation("categoryCreated")
   featuredCategoryEdited  FeaturedCategory[] @relation("featuredCategoryEdited")
   featuredCategoryCreated FeaturedCategory[] @relation("featuredCategoryCreated")
+  userSettings            UserSettings?
 }
 
 model VerificationToken {
@@ -68,9 +76,9 @@ model VerificationToken {
 
 model Store {
   id                  String             @id @default(cuid()) @map("_id")
-  name                String
-  slug                String             @unique
-  description         String
+  name                String             @unique @default(cuid())
+  slug                String             @unique @default(cuid())
+  description         String             @default("store description")
   location            String?
   logo                String?
   storeEmail          String?            @unique
@@ -78,8 +86,8 @@ model Store {
   whatsappPhone       String?
   address             String?
   products            Product[]
-  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId              String             @unique
+  account             Account?           @relation(fields: [accountId], references: [id])
+  accountId           String?            @unique
   isActive            Boolean            @default(false)
   isVerified          Boolean            @default(false)
   createdAt           DateTime           @default(now())
@@ -88,6 +96,8 @@ model Store {
   categories          Category[]         @relation("StoreToCategory", fields: [categoryIds], references: [id])
   featuredCategoryIds String[]           @db.ObjectId
   featuredCategories  FeaturedCategory[] @relation("StoreToFeaturedCategory", fields: [featuredCategoryIds], references: [id])
+  storeSettings       StoreSettings?
+  brands              Brand[]
 }
 
 model Brand {
@@ -102,6 +112,8 @@ model Brand {
   editedById  String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  store       Store?    @relation(fields: [storeId], references: [id])
+  storeId     String?
 }
 
 model Category {
@@ -166,4 +178,39 @@ model FeaturedCategory {
   editedById    String?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
+}
+
+model UserSettings {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  activeAccount         Account? @relation(fields: [activeAccountId], references: [id])
+  activeAccountId       String?  @unique
+  promptedToCreateStore Boolean  @default(false)
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String   @unique
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// remember to add active account relationship to account table
+
+model StoreSettings {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountSettings {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
+  ROOT
 }

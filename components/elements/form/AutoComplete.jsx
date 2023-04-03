@@ -7,7 +7,8 @@ export default function AutoComplete({
   label,
   items,
   getSelected,
-  getSearchString,
+  error,
+  ...props
 }) {
   const [selected, setSelected] = useState({});
   const [query, setQuery] = useState("");
@@ -24,26 +25,25 @@ export default function AutoComplete({
 
   return (
     <div className=" w-full">
-      <h3 className="font-semibold text-sm mb-2">{label}</h3>
+      <h3 className={`font-semibold text-sm mb-2 ${error && "text-error"}`}>
+        {label} - {error}
+      </h3>
+
+      {/* {meta.touched && meta.error ? <div>{meta.error}</div> : null} */}
       <Combobox
         value={selected}
-        // onChange={(e) => onChanged(e)}
         onChange={(e) => {
-          function setSelectedItem(e) {
-            setSelected(e);
-          }
-          onChanged(e);
-          setSelectedItem();
           getSelected(e);
           setSelected(e);
         }}
+        {...props}
       >
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden ">
             <Combobox.Input
               className=""
               displayValue={(item) => item.name}
-              onChange={(event) => getSearchString(event.target.value)}
+
               // onChange={(event) => setQuery(event.target.value)}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">

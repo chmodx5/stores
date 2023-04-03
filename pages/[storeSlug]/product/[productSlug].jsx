@@ -44,44 +44,40 @@ const StoreSingleProduct = ({ product }) => {
           <div className="col-span-12 mb-10 md:col-span-7 lg:col-span-6 ">
             <div classes="p-0 w-9/12 mx-auto ">
               <Slider ref={sliderRef} {...settings}>
-                {product.images.split(",").map((image, index) => (
-                  <ImageContainer
-                    key={index}
-                    src={`${
-                      image.includes("http")
-                        ? image
-                        : `http://localhost:5000/images/products` + image
-                    }`}
-                    alt={"slider image"}
-                  />
-                ))}
+                {[product.thumbnail, ...product.images.split(",")].map(
+                  (image, index) => (
+                    <ImageContainer
+                      key={index}
+                      src={`${image ? image : ""}`}
+                      alt={image}
+                    />
+                  )
+                )}
               </Slider>
             </div>
 
             <div className="flex  space-x-4 mt-4 md:mt-8">
-              {product.images.split(",").map((image, idx) => (
-                <div
-                  key={idx}
-                  className={`w-12 md:w-16 shadow hover:shadow-xl hover:scale-110 transition-all hover:outline  hover:outline-primary hover:outline-2  rounded-xl ${
-                    currentSlide == idx
-                      ? "outline outline-primary outline-2"
-                      : ""
-                  }`}
-                >
-                  <ImageContainer
-                    src={`${
-                      image.includes("http")
-                        ? image
-                        : `http://localhost:5000/images/products` + image
+              {[product.thumbnail, ...product.images.split(",")].map(
+                (image, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-12 md:w-16 shadow hover:shadow-xl hover:scale-110 transition-all hover:outline  hover:outline-primary hover:outline-2  rounded-xl ${
+                      currentSlide == idx
+                        ? "outline outline-primary outline-2"
+                        : ""
                     }`}
-                    alt="product thumbnail image"
-                    onClick={() => {
-                      setCurrentSlide(idx);
-                      sliderRef.current.slickGoTo(idx);
-                    }}
-                  />
-                </div>
-              ))}
+                  >
+                    <ImageContainer
+                      src={`${image ? image : ""}`}
+                      alt={`${product.name + " image"}`}
+                      onClick={() => {
+                        setCurrentSlide(idx);
+                        sliderRef.current.slickGoTo(idx);
+                      }}
+                    />
+                  </div>
+                )
+              )}
             </div>
           </div>
           <div className="col-span-12 md:col-span-5 lg:col-span-6 ">

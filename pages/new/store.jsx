@@ -12,53 +12,49 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
+import { useContext } from "react";
+import { userContext } from "../../store/userContext";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./../api/auth/[...nextauth]";
+import prisma from "../../utils/prismadb";
 
-const CreateStore = () => {
+const CreateStore = ({ user }) => {
   const { data: session } = useSession();
+  const { setUser } = useContext(userContext);
+  const [formErrors, setFormErrors] = useState("");
+  const [formSuccess, setFormSuccess] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
 
-  console.log(session);
+  console.log(user);
 
-  const [storeName, setStoreName] = useState("");
-  const [storeDescription, setStoreDescription] = useState("");
-  const [storeLocation, setStoreLocation] = useState("");
-  const [storeLogo, setStoreLogo] = useState("");
-  const [storeEmail, setStoreEmail] = useState("");
-  const [storePhone, setStorePhone] = useState("");
-  const [storeWhatsappPhone, setStoreWhatsappPhone] = useState("");
-  const [storeAddress, setStoreAddress] = useState("");
+  const router = useRouter();
 
-  const [storeLogoPreviewUrl, setStoreLogoPreviewUrl] = useState(null);
+  useEffect(() => {
+    setUser(user);
+    if (user.accounts[0].store) {
+      router.push(`/${user.accounts[0].store.slug}/admin`);
+    }
+  }, []);
 
-  const handleCreateNewStoreForm = async (e) => {
-    e.preventDefault();
+  // useEffect(() => {
+  //   // if (!session) {
+  //   //   router.push("/auth/login");
+  //   // }
 
-    // new store object using formData
-    const newStore = new FormData();
-    newStore.append("name", storeName);
-    newStore.append("description", storeDescription);
-    newStore.append("location", storeLocation);
-    newStore.append("logo", storeLogo);
-    newStore.append("email", storeEmail);
-    newStore.append("phone", storePhone);
-    newStore.append("whatsappPhone", storeWhatsappPhone);
-    newStore.append("address", storeAddress);
-
-    console.log(newStore.getAll("email"));
-
-    const response = await fetch("/api/store", {
-      method: "POST",
-      body: newStore,
-    });
-
-    //get the data from the response
-    const data = await response.json();
-
-    console.log(data);
-  };
+  //   fetch("/api/users")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log(data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, [user]);
 
   return (
     <div>
-      <button onClick={() => signOut()}>log out</button>
       <Card className="p-8 mt-4 w-96 mx-auto">
         <div className="flex mb-8 flex-col justify-center items-center">
           <Logo />
@@ -66,88 +62,198 @@ const CreateStore = () => {
         </div>
 
         <br />
-        <form className="space-y-4" onSubmit={handleCreateNewStoreForm}>
-          <TextInput
-            type="text"
-            label={"Store Name"}
-            name="storeName"
-            id="storeName"
-            className={"flex-1"}
-            value={storeName}
-            onChange={(e) => setStoreName(e.target.value)}
-          />
-          <TextInput
-            type="text"
-            label={"Store Description"}
-            name="storeDescription"
-            id="storeDescription"
-            value={storeDescription}
-            onChange={(e) => setStoreDescription(e.target.value)}
-          />
-          <TextInput
-            label={"Store Location"}
-            type="text"
-            name="storeLocation"
-            id="storeLocation"
-            value={storeLocation}
-            onChange={(e) => setStoreLocation(e.target.value)}
-          />
+        <Formik
+          initialValues={{
+            storeName: "",
+            storeDescription: "",
+            storeLocation: "",
+            storeLogo: "",
+            storeEmail: "",
+            storePhone: "",
+            storeWhatsappPhone: "",
+            storeAddress: "",
+          }}
+          validationSchema={Yup.object({
+            storeName: Yup.string().required("Required"),
+            storeDescription: Yup.string().required("Required"),
+            storeLocation: Yup.string().required("Required"),
+            storeLogo: Yup.mixed()
+              .test("fileFormat", "invalid file format", (value) => {
+                if (value) {
+                  if (
+                    value.type === "image/png" ||
+                    value.type === "image/jpeg"
+                  ) {
+                    return true;
+                  }
+                }
+                return false;
+              })
+              .test("fileSize", "file too large max 2mb", (value) => {
+                if (value) {
+                  if (value.size < 2000000) {
+                    return true;
+                  }
+                }
+                return false;
+              }),
+            storeEmail: Yup.string()
+              .email("Invalid email address")
+              .required("Required"),
+            storePhone: Yup.string().required("Required"),
+            storeWhatsappPhone: Yup.string().required("Required"),
+            storeAddress: Yup.string().required("Required"),
+          })}
+          onSubmit={(values, { setSubmitting }) => {
+            // console.log(values);
+            setFormLoading(true);
+            setFormSuccess(false);
+            setFormErrors("");
 
-          <FileInput
-            previewImage={storeLogoPreviewUrl}
-            label={"Store logo"}
-            onChange={(e) => {
-              const selectedImage = e.target.files[0];
-              setStoreLogo(selectedImage);
-              setStoreLogoPreviewUrl(URL.createObjectURL(selectedImage));
-            }}
-          />
+            const newStore = new FormData();
 
-          <TextInput
-            type="text"
-            label={"Store Email"}
-            name="storeEmail"
-            id="storeEmail"
-            value={storeEmail}
-            onChange={(e) => setStoreEmail(e.target.value)}
-          />
-          <TextInput
-            type="text"
-            label={"Store Phone Number"}
-            name="storePhone"
-            id="storePhone"
-            value={storePhone}
-            onChange={(e) => setStorePhone(e.target.value)}
-          />
+            newStore.append("name", values.storeName);
+            newStore.append("description", values.storeDescription);
+            newStore.append("location", values.storeLocation);
+            newStore.append("logo", values.storeLogo);
+            newStore.append("email", values.storeEmail);
+            newStore.append("phone", values.storePhone);
+            newStore.append("whatsappPhone", values.storeWhatsappPhone);
+            newStore.append("address", values.storeAddress);
 
-          <TextInput
-            type="text"
-            label={"Whatsapp Phone Number"}
-            name="storePhone"
-            id="storePhone"
-            value={storeWhatsappPhone}
-            onChange={(e) => setStoreWhatsappPhone(e.target.value)}
-          />
-          <TextInput
-            type="text"
-            label={"Address"}
-            name="address"
-            id="address"
-            value={storeAddress}
-            onChange={(e) => setStoreAddress(e.target.value)}
-          />
+            fetch("/api/stores", {
+              method: "POST",
+              body: newStore,
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                setFormLoading(false);
+                if (data.success) {
+                  setFormSuccess(true);
+                  setFormErrors("");
+                  //wait for 2 seconds then redirect to store page
+                  setTimeout(() => {
+                    router.push(`/${data.store.slug}/admin`);
+                  }, 2000);
+                } else {
+                  setFormSuccess(false);
+                  setFormErrors(data.message);
+                }
+              })
+              .catch((err) => {
+                setFormLoading(false);
+                setFormSuccess(false);
+                setFormErrors("Something went wrong");
+              });
+          }}
+        >
+          {(formik) => (
+            <Form>
+              <div className="space-y-4">
+                {console.log(formik.errors)}
+                <TextInput
+                  type="text"
+                  label={"Store Name"}
+                  name="storeName"
+                  className={"flex-1"}
+                  placeholder={"Store Name"}
+                />
+                <TextInput
+                  type="text"
+                  label={"Store Description"}
+                  name="storeDescription"
+                  placeholder={"Store Description"}
+                />
+                <TextInput
+                  label={"Store Location"}
+                  type="text"
+                  name="storeLocation"
+                  placeholder={"Store Location"}
+                />
 
-          {/* {isError && (
-            <Alert>{error?.data?.message || "Something went wrong"}</Alert>
-          )} */}
-          <Button type="submit">
-            {/* {isLoading ? <LoadingSpinner /> : "Create Store"} */}
-            create store
-          </Button>
-        </form>
+                <FileInput
+                  label={"Store logo"}
+                  name="storeLogo"
+                  formik={formik}
+                  accept="image/png, image/jpeg, image/jpg, image/gif"
+                />
+
+                <TextInput
+                  type="text"
+                  label={"Store Email"}
+                  name="storeEmail"
+                  placeholder={"Store Email"}
+                />
+                <TextInput
+                  type="text"
+                  label={"Store Phone Number"}
+                  name="storePhone"
+                  placeholder={"Store Phone Number"}
+                />
+
+                <TextInput
+                  type="text"
+                  label={"Whatsapp Phone Number"}
+                  name="storeWhatsappPhone"
+                  placeholder={"Whatsapp Phone Number"}
+                />
+                <TextInput
+                  type="text"
+                  label={"Address"}
+                  name="storeAddress"
+                  placeholder={"Address"}
+                />
+
+                {formErrors && (
+                  <Alert variant={"error"}>
+                    {formErrors || "Something went wrong"}
+                  </Alert>
+                )}
+
+                {formSuccess && (
+                  <Alert variant={"success"}>Store created successfully</Alert>
+                )}
+                <Button type="submit" isLoading={formLoading} block>
+                  {/* {isLoading ? <LoadingSpinner /> : "Create Store"} */}
+                  create store
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </Card>
     </div>
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      image: true,
+      createdAt: true,
+      accounts: {
+        include: {
+          store: true,
+          accountSettings: true,
+        },
+      },
+    },
+  });
+
+  return {
+    props: {
+      user: JSON.parse(JSON.stringify(user)),
+    },
+  };
+}
 
 export default CreateStore;

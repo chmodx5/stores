@@ -8,9 +8,18 @@ import {
 } from "./../../components/sections/shared";
 import StoreLayout from "../../components/layouts/store/StoreLayout";
 import { storeContext } from "../../store/storeContext";
+import { useSession } from "next-auth/react";
 
 const StoreHome = ({ store, categories, productToBeFetched }) => {
   const { setStore } = React.useContext(storeContext);
+  ///get
+
+  console.log(categories);
+  const { data: session, status } = useSession();
+
+  console.log("session", session);
+
+  // console.log(categories);
 
   React.useEffect(() => {
     setStore(store);
@@ -26,14 +35,20 @@ const StoreHome = ({ store, categories, productToBeFetched }) => {
         <CaregoriesSlider categories={categories} />
       </div>
       <div className=" space-y-4">
-        {categories.map((category) => (
-          <GroupedProducts
-            key={category.id}
-            title={category.name}
-            link={"/" + storeSlug + "/products?category=" + category.slug}
-            products={category.products}
-          />
-        ))}
+        {categories.map((category) => {
+          if (category.products.length > 0) {
+            return (
+              <GroupedProducts
+                key={category.id}
+                title={category.name}
+                link={"/" + storeSlug + "/products?category=" + category.slug}
+                products={category.products}
+              />
+            );
+          } else {
+            return null;
+          }
+        })}
       </div>
     </div>
   );
@@ -46,21 +61,65 @@ export async function getServerSideProps(context) {
     },
   });
 
+  // const users = await prisma.user.findMany();
+  // const accounts = await prisma.account.findMany();
+
+  // console.log("users", users);
+  // console.log("accounts", accounts);
+
   const categories = await prisma.category.findMany({
     where: {
-      storeIds: {
-        has: store.id,
+      stores: {
+        every: {
+          slug: context.query.storeSlug,
+        },
       },
+      // products: {
+      //   some: {
+      //     brandId: {
+      //       not: null,
+      //     },
+      //     categoryId: {
+      //       not: null,
+      //     },
+      //   },
+      // },
     },
-    include: {
+    select: {
+      _count: true,
+      id: true,
+      name: true,
+      slug: true,
+      image: true,
       products: {
-        include: {
-          brand: true,
-          category: true,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          thumbnail: true,
+          price: true,
+          discountPrice: true,
+          category: {
+            select: {
+              name: true,
+              slug: true,
+            },
+          },
         },
         take: 10,
       },
     },
+    take: 10,
+    // include: {
+    //   products: {
+    //     include: {
+    //       _count: true,
+    //       brand: true,
+    //       category: true,
+    //     },
+    //     take: 10,
+    //   },
+    // },
   });
   let errorMessage = "";
   let isSuccess = false;

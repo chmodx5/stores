@@ -1,6 +1,7 @@
 import React from "react";
+import LoadingSpinner from "../loadingSpinner/LoadingSpinner";
 
-const IconButton = ({ children, color, ...props }) => {
+const IconButton = ({ isLoading, children, className, color, ...props }) => {
   const buttonColorClasses = () => {
     switch (color) {
       case "primary":
@@ -20,10 +21,10 @@ const IconButton = ({ children, color, ...props }) => {
 
   return (
     <button
-      className={`inline-flex text-white font-semibold  border-0  items-center justify-center h-10 w-10 focus:outline-none  rounded-xl  ${buttonColorClasses()}`}
+      className={`inline-flex text-white font-semibold  border-0  items-center justify-center h-10 w-10 focus:outline-none  rounded-full  ${buttonColorClasses()} ${className}`}
       {...props}
     >
-      {children}
+      {isLoading ? <LoadingSpinner /> : <span>{children}</span>}
     </button>
   );
 };

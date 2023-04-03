@@ -31,8 +31,12 @@ export const authOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token }) {
-      token.userRole = "admin";
+    async jwt({ session, token, account }) {
+      if (account) {
+        token.account = account.provider;
+      }
+      // token.userRole = "admin";
+      // console.log("token", token);
       return token;
     },
   },

@@ -1,25 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import ImageContainer from "../imageContainer/ImageContainer";
 import { IconButton } from "..";
 import { FaUpload } from "react-icons/fa";
+import { useField, useFormik } from "formik";
 
-const FileInput = ({ label, previewImage, id, mini, ...props }) => {
+const FileInput = ({ label, formik, id, mini, noAspectRatio, ...props }) => {
+  // let [previewImage, setPreviewImage] = useState("null");
+  //create useFormik hook
+  const [previewImg, setPreviewImg] = useState(null);
+
+  const [field, meta] = useField(props);
+  const fieldChange = (e) => {
+    // console.log("field.value", e.target.files[0]);
+    formik.setFieldValue(field.name, e.target.files[0]);
+    field.value = e.target.files[0];
+    setPreviewImg(URL.createObjectURL(e.target.files[0]));
+    // console.log("field.value", field.value);
+  };
   return (
     <div className="block">
-      <h3 className="font-semibold text-sm mb-2">{label}</h3>
-      {previewImage ? (
+      <h3
+        className={`font-semibold text-sm mb-2 ${
+          meta.error ? "text-error" : ""
+        }`}
+      >
+        {label} {meta.error ? <span> - {meta.error}</span> : null}{" "}
+      </h3>
+      {previewImg ? (
         <div className="relative">
-          <ImageContainer src={previewImage} />
+          <ImageContainer src={previewImg} />
           <div className="absolute  top-5 right-5">
-            <label htmlFor={id + "-preview"}>
+            <label htmlFor={props.id || props.name}>
               <div className="bg-primary  w-8 h-8 rounded-xl shadow hover:shadow-xl text-white flex items-center justify-center hover:cursor-pointer hover:bg-primary/80 ">
                 <FaUpload />
               </div>
             </label>
             <input
-              id={id + "-preview"}
-              type="file"
               className="hidden"
+              type="file"
+              onChange={fieldChange}
+              id={props.id || props.name}
+              // {...field}
               {...props}
             />
           </div>
@@ -27,8 +48,10 @@ const FileInput = ({ label, previewImage, id, mini, ...props }) => {
       ) : (
         <div className="flex items-center justify-center w-full">
           <label
-            htmlFor={id}
-            className="flex flex-col items-center justify-center w-full aspect-square border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-primary/10 hover:bg-gray-100 "
+            htmlFor={props.id || props.name}
+            className={`flex flex-col items-center justify-center w-full ${
+              noAspectRatio ? " " : "aspect-square"
+            } border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-primary/10 hover:bg-gray-100`}
           >
             <div
               className={`flex flex-col items-center justify-center  ${
@@ -65,7 +88,15 @@ const FileInput = ({ label, previewImage, id, mini, ...props }) => {
                 </p>
               )}
             </div>
-            <input id={id} type="file" className="hidden" {...props} />
+
+            <input
+              type="file"
+              onChange={fieldChange}
+              id={props.id || props.name}
+              // {...field}
+              className="hidden"
+              {...props}
+            />
           </label>
         </div>
       )}

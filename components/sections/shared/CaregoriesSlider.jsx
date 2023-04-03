@@ -8,7 +8,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 const CaregoriesSlider = ({ title, small, products, link, categories }) => {
-  console.log("categories slider", categories);
   const settings = {
     dots: false,
     infinite: true,
@@ -90,14 +89,16 @@ const CaregoriesSlider = ({ title, small, products, link, categories }) => {
           <h1 className="text-xl font-bold  capitalize ">
             Featured Categories
           </h1>
-          <div className="flex space-x-2">
-            <div className="">
-              <PrevButton />
+          {categories && categories.length > 7 && (
+            <div className="flex space-x-2">
+              <div className="">
+                <PrevButton />
+              </div>
+              <div className="">
+                <NextButton />
+              </div>
             </div>
-            <div className="">
-              <NextButton />
-            </div>
-          </div>
+          )}
         </div>
       </div>
       {/* <div className="px-2 bg-yellow-300">
@@ -123,7 +124,7 @@ const CaregoriesSlider = ({ title, small, products, link, categories }) => {
 
       <div className="relative pb-10 px-2">
         <>
-          {categories && categories.length > 4 ? (
+          {categories && categories.length > 7 ? (
             <>
               <Slider ref={slider} {...settings} className="">
                 {categories &&
@@ -153,7 +154,7 @@ const CaregoriesSlider = ({ title, small, products, link, categories }) => {
                             </h1>
                             <div>
                               <small className="text-xs text-gray-500">
-                                Items - {category.products.length}
+                                Items - {category._count.products}
                               </small>
                             </div>
                           </div>
@@ -165,15 +166,42 @@ const CaregoriesSlider = ({ title, small, products, link, categories }) => {
             </>
           ) : (
             <ul
-              className={`grid grid-cols-2 ${
-                small ? "md:grid-cols-6 " : "md:grid-cols-4"
+              className={`grid grid-cols-4 ${
+                small ? "md:grid-cols-6 " : "md:grid-cols-8"
               } `}
             >
               {categories &&
-                categories.map((product, idx) => (
-                  <li key={product.id} className=" rounded-xl">
-                    <Product small product={product} />
-                  </li>
+                categories.map((category, idx) => (
+                  <div key={category.id} className="">
+                    {/* <Product small product={product} /> */}
+                    <Link
+                      href={`/${storeSlug}/products?category=${category.slug}`}
+                    >
+                      <Card
+                        classes={"py-2 mx-2 my-2"}
+                        // href={`/${storeSlug}/products?category=${storeSlug}`}
+                      >
+                        <ImageContainer
+                          src={
+                            category.image
+                              ? category.image.replace("./public", "")
+                              : "https://loremflickr.com/320/240"
+                          }
+                          alt={category.name + " thumbnail"}
+                        />
+                        <div>
+                          <h1 className="text-xs font-semibold pt-4">
+                            {category.name}
+                          </h1>
+                          <div>
+                            <small className="text-xs text-gray-500">
+                              Items - {category._count.products}
+                            </small>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  </div>
                 ))}
             </ul>
           )}

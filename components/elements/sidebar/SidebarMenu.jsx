@@ -3,6 +3,8 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { HiChevronDown } from "react-icons/hi";
 import { BsDot } from "react-icons/bs";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import SidebarLink from "./SidebarLink";
 
 const linkButtonClasses = `w-full rounded-xl px-4 py-3 capitalize text-base font-medium hover:text-primary hover:bg-primary/20 group text-left text-gray-500`;
 
@@ -21,19 +23,7 @@ export default function Example({ menuGroup }) {
               <div key={idx}>
                 {/* check if subitems exists */}
                 {!item.subItems ? (
-                  <Link
-                    to={item.link}
-                    className={({ isActive }) =>
-                      `${linkButtonClasses} ${"block"} ${
-                        isActive
-                          ? "bg-primary/20 block text-primary"
-                          : undefined
-                      }`
-                    }
-                    end
-                  >
-                    {item.name}
-                  </Link>
+                  <SidebarLink href={item.link}>{item.name}</SidebarLink>
                 ) : (
                   <AppMenu item={item} />
                 )}
@@ -47,7 +37,7 @@ export default function Example({ menuGroup }) {
 }
 
 const AppMenu = ({ item }) => {
-  const currentRoute = useLocation().pathname;
+  const currentRoute = useRouter().asPath;
 
   const [isMenuOpen, setIsMenuOpen] = useState(
     currentRoute.split("/")[3] == item.subItems[0].link.split("/")[3]
@@ -55,9 +45,19 @@ const AppMenu = ({ item }) => {
       : false
   );
 
+  useEffect(() => {
+    setIsMenuOpen(
+      currentRoute.split("/")[3] == item.subItems[0].link.split("/")[3]
+        ? true
+        : false
+    );
+  }, [currentRoute]);
+
+  console.log("menu open", isMenuOpen);
+
   return (
     <div>
-      <li className="relative list-none">
+      <ul className="relative list-none">
         <>
           <div>
             <button
@@ -81,20 +81,9 @@ const AppMenu = ({ item }) => {
                   {item.subItems &&
                     item.subItems.map((item, idx) => (
                       <div key={idx} className="list-none">
-                        <NavLink
-                          to={item.link}
-                          className={({ isActive }) =>
-                            `${linkButtonClasses} ${
-                              isActive
-                                ? "bg-primary/20 text-primary"
-                                : undefined
-                            } flex items-center space-x-4`
-                          }
-                          end
-                        >
-                          <BsDot />
+                        <SidebarLink href={item.link} icon={<BsDot />}>
                           {item.name}
-                        </NavLink>
+                        </SidebarLink>
                       </div>
                     ))}
                 </div>
@@ -102,7 +91,7 @@ const AppMenu = ({ item }) => {
             </div>
           )}
         </>
-      </li>
+      </ul>
     </div>
   );
 };

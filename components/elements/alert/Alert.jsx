@@ -32,10 +32,8 @@ const Alert = ({ children, variant }) => {
   return (
     <Card
       flat
-      className={`${buttonVariantClasses()} bg-opacity-20 p-4 font-bold flex space-x-2`}
+      className={`${buttonVariantClasses()} bg-opacity-20 p-4 font-bold rounded-xl flex space-x-2`}
     >
-      <span>Error: </span>
-
       <div className="font-bold">{children}</div>
     </Card>
   );

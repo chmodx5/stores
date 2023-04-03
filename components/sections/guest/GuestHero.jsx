@@ -1,6 +1,7 @@
 import React from "react";
-import { ImageContainer, Logo } from "../../elements";
+import { Button, ImageContainer, Logo } from "../../elements";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const GuestHero = () => {
   return (
@@ -18,7 +19,7 @@ const GuestHero = () => {
             <ImageContainer alt="shopping icon" src={"./hero.svg"} />
           </div>
           <div>
-            <p className="mb-8 leading-relaxed hidden md:block">
+            <p className="mb-8 leading-relaxed hidden md:block ">
               Maduka is a platform that allows you to sell your products online
               and manage your business. It is free to use and you can start
               selling your products in minutes.
@@ -29,12 +30,22 @@ const GuestHero = () => {
           </h3>
 
           <br />
+          <div className="flex space-x-4">
+            <Link href={"/new/store"}>
+              <Button color="primary" variant="solid" size="xl">
+                Get Started
+              </Button>
+            </Link>
 
-          <Link href={"/new/store"}>
-            <button className="inline-flex text-white bg-primary border-0 py-2 px-6 focus:outline-none hover:bg-primary/80 rounded text-lg">
-              Get Started
-            </button>
-          </Link>
+            <Button
+              onClick={() => signIn()}
+              color="primary"
+              variant="outline"
+              size="xl"
+            >
+              Login
+            </Button>
+          </div>
         </div>
         <div className="hidden md:w-1/2  w-5/6 order-1 md:order-2 md:flex items-center justify-center">
           <div className="w-3/4">

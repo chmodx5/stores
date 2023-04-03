@@ -155,7 +155,24 @@ async function getAllData() {
   });
 }
 
-generateCategories(10, true);
-generateBrands(10, true);
-generateProducts(10, true);
-getAllData();
+// generateCategories(10, true);
+// generateBrands(10, true);
+// generateProducts(10, true);
+// getAllData();
+async function deleteAllData() {
+  try {
+    await prisma.store.deleteMany();
+    // await prisma.account.deleteMany();
+    // await prisma.session.deleteMany();
+    // await prisma.user.deleteMany();
+    // await prisma.verificationToken.deleteMany();
+    // await prisma.product.deleteMany();
+    // await prisma.category.deleteMany();
+    // await prisma.brand.deleteMany();
+    console.log("deleted successfully");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+deleteAllData();
